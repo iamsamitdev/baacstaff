@@ -3,6 +3,7 @@ import 'package:baacstaff/services/rest_api.dart';
 import 'package:baacstaff/utils/utility.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmployeeDetailScreen extends StatefulWidget {
   EmployeeDetailScreen({Key key}) : super(key: key);
@@ -12,6 +13,12 @@ class EmployeeDetailScreen extends StatefulWidget {
 }
 
 class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
+
+  // เรียกใช้ตัวแปร SharedPrefference
+  SharedPreferences sharedPreferences;
+
+  // ตัวแปรไว้ทดสอบอ่าน IMEI และ MAC Address
+  String _getIMEI, _getMacAddress;
 
   // เรียกใช้ Model RegisterModel
   RegisterModel _dataEmployee; 
@@ -32,9 +39,14 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
       Utility.getInstance()
       .showAlertDialog(context, 'ออฟไลน์', 'คุณยังไม่ได้เชื่อมต่ออินเตอร์เน็ต');
     }else{
+      sharedPreferences = await SharedPreferences.getInstance();
+      // อ่านข้อมูลจาก sharedPreferences ลงตัวแปร
+      _getIMEI = sharedPreferences.getString('storeIMEI').toString();
+      _getMacAddress = sharedPreferences.getString('storeMac').toString();
+
       var empData = {
-        "empid":"5601965",
-        "cizid":"7127225663620"
+        "empid": sharedPreferences.getString('storeEmpID').toString(),
+        "cizid": sharedPreferences.getString('storeCizID').toString()
       };
       try{
         var response = await CallAPI().getEmployee(empData);
@@ -59,52 +71,62 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
           ListTile(
             leading: Icon(Icons.person),
             title: Text('ชื่อ-สกุล'),
-            subtitle: Text('${_dataEmployee.data?.firstname ?? "..."}'),
+            subtitle: Text('${_dataEmployee?.data?.firstname ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.credit_card),
             title: Text('รหัสพนักงาน'),
-            subtitle: Text('${_dataEmployee.data?.empid ?? "..."}'),
+            subtitle: Text('${_dataEmployee?.data?.empid ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.person_pin),
             title: Text('เพศ'),
-            subtitle: Text('${_dataEmployee.data?.gender ?? "..."}'),
+            subtitle: Text('${_dataEmployee?.data?.gender ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.person_pin_circle),
             title: Text('ตำแหน่ง'),
-            subtitle: Text('${_dataEmployee.data?.position ?? "..."}'),
+            subtitle: Text('${_dataEmployee?.data?.position ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.person_pin_circle),
             title: Text('สังกัด'),
-            subtitle: Text('${_dataEmployee.data?.department ?? "..."}'),
+            subtitle: Text('${_dataEmployee?.data?.department ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.attach_money),
             title: Text('เงินเดือน'),
-            subtitle: Text('${_dataEmployee.data?.salary ?? "..."}'),
+            subtitle: Text('${_dataEmployee?.data?.salary ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.cake),
             title: Text('วันเกิด'),
-            subtitle: Text('${_dataEmployee.data?.birthdate ?? "..."}'),
+            subtitle: Text('${_dataEmployee?.data?.birthdate ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.email),
             title: Text('อีเมล์'),
-            subtitle: Text('samit@gmail.com'),
+            subtitle: Text('${_dataEmployee?.data?.email ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.phone),
             title: Text('เบอร์โทรศัพท์'),
-            subtitle: Text('095-979-8887'),
+            subtitle: Text('${_dataEmployee?.data?.tel ?? "..."}'),
           ),
           ListTile(
             leading: Icon(Icons.home),
             title: Text('ที่อยู่'),
-            subtitle: Text('3/448 Ladprao bangkok 2000'),
+            subtitle: Text('${_dataEmployee?.data?.address ?? "..."}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text('IMEI'),
+            subtitle: Text('${_getIMEI ?? "..."}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text('Mac Address'),
+            subtitle: Text('${_getMacAddress ?? "..."}'),
           ),
         ],
       ),

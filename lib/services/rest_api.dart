@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:baacstaff/models/NewsModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:baacstaff/models/RegisterModel.dart';
 
@@ -34,6 +35,19 @@ class CallAPI {
       }else{
         return null;
       }
+  }
+
+  // Read News
+  Future<List<NewsModel>> getNews() async{
+    final response = await http.get(
+      baseAPIURL+'news',
+      headers: _setHeaders()
+    );
+    if(response.body != null){
+      return newsModelFromJson(response.body);
+    }else{
+      return null;
+    }
   }
   
 

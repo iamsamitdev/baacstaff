@@ -4,6 +4,9 @@ import 'package:baacstaff/utils/utility.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:baacstaff/services/rest_api.dart';
+import 'package:flutter/services.dart';
+import 'package:get_mac/get_mac.dart';
+import 'package:imei_plugin/imei_plugin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Register extends StatefulWidget {
@@ -20,6 +23,38 @@ class _RegisterState extends State<Register> {
 
   // สร้างตัวแปรไว้รับค่าจากฟอร์ม
   String empID, cizID;
+
+  // สร้างตัวแปรไว้เก็บค่า IMEI และ MacAddress ของเครื่อง
+  String _imeiNumber;
+  String _macAddress;
+
+  // ฟังก์ชันอ่านข้อมูล IMEI และ Mac Address
+  Future<void> initPlatformState() async {
+    String imeiNumber = "Unknown";
+    String macAddress = "Unknown";
+    
+    try{
+      imeiNumber = await ImeiPlugin
+                  .getImei(shouldShowRequestPermissionRationale: false);
+      macAddress = await GetMac.macAddress;
+    }on PlatformException{
+      macAddress = "Faild to get Device MAC Address";
+    }
+
+    if(!mounted) return;
+
+    setState(() {
+      _imeiNumber = imeiNumber;
+      _macAddress = macAddress;
+    });
+
+  }
+
+  @override
+  void initState() { 
+    super.initState();
+    initPlatformState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +221,10 @@ class _RegisterState extends State<Register> {
         await SharedPreferences.getInstance();
 
         // เก็บค่าที่ต้องการลง SharedPrefference
-        sharedPreferences.setString('storeEmpID', body['data']['empid']);
+        sharedPreferences.setString('storeIMEI', _imeiNumber); // เก็บ EMEI 
+        sharedPreferences.setString('storeMac', _macAddress); // เก็บ MacAddress 
+        sharedPreferences.setString('storeEmpID', body['data']['empid']); // รหัสพนักงาน
+        sharedPreferences.setString('storeCizID', body['data']['cizid']); // บัตรประชาชน
         sharedPreferences.setString('storePrename', body['data']['prename']);
         sharedPreferences.setString('storeFirstname', body['data']['firstname']);
         sharedPreferences.setString('storeLastname', body['data']['lastname']);

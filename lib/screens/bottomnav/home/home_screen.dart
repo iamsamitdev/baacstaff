@@ -1,6 +1,10 @@
+import 'package:baacstaff/models/NewsModel.dart';
+import 'package:baacstaff/services/rest_api.dart';
 import 'package:baacstaff/utils/utility.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -13,7 +17,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String _currentDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
   final String _currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
-  final List<int> numbers = [1, 2, 3, 5, 8];
+
+  // สร้าง Ojbect Geolocator
+  Position position;
+ 
+  // ฟังก์ชันเช็คว่าผู้ใช้เปิด GPS แล้วหรือยัง
+  checkGPS() async {
+    position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    bool _isLocationServiceEnabled = await isLocationServiceEnabled();
+    if(_isLocationServiceEnabled){
+      Utility.getInstance().showAlertDialog(
+        context, 'พิกัดที่ได้', 
+        'Latitude='+position.latitude.toString()+'\n'
+        'Longitude='+position.longitude.toString()
+      );
+    }else{
+      Utility.getInstance().showAlertDialog(context, 'คุณยังไม่ได้เปิด GPS', 'กรุณาเปิดก่อนใช้งาน');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           RaisedButton(
                             onPressed: (){
-
+                              checkGPS();
+                              /*                        
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) => SimpleDialog(
@@ -117,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 )
 
                               );
-
+                              */
                             },
                             child: Text('ลงเวลาทำงาน', style: TextStyle(color: Colors.white),),
                             color: Colors.red,
@@ -138,20 +160,23 @@ class _HomeScreenState extends State<HomeScreen> {
            child: Text('ข่าวประกาศล่าสุด', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
          ),
          Container(
-           height: MediaQuery.of(context).size.height * 0.25,
-           child: ListView.builder(
-           scrollDirection: Axis.horizontal,
-           itemCount: numbers.length, itemBuilder: (context, index) {
-              return Container(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: Card(
-                  color: Colors.green,
-                  child: Container(
-                    child: Center(child: Text(numbers[index].toString(), style: TextStyle(color: Colors.white, fontSize: 36.0),)),
-                  ),
-                ),
-              );
-            }
+           height: MediaQuery.of(context).size.height * 0.28,
+           child: FutureBuilder(
+             future: CallAPI().getNews(),
+             builder: (BuildContext context, AsyncSnapshot<List<NewsModel>> snapshot){
+               if(snapshot.hasError){
+                 return Center(
+                   child: Text('มีข้อผิดพลาด ${snapshot.error.toString()}'),
+                 );
+               }else if(snapshot.connectionState == ConnectionState.done){
+                List<NewsModel> news = snapshot.data;
+                return _builderListView(news);
+               }else{
+                 return Center(
+                   child: CircularProgressIndicator(),
+                 );
+               }
+             }
           ),
          ),
          Padding(
@@ -159,39 +184,106 @@ class _HomeScreenState extends State<HomeScreen> {
            child: Text('ข่าวทั้งหมด', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
          ),
 
-         ListTile(
-           leading: Icon(Icons.new_releases),
-           title: Text('แจ้งจัดชุด Sale It'),
-           subtitle: Text('คู่มือขายผลิตภัณฑ์และบริการ'),
-           onTap: () {},
+         Container(
+           height: MediaQuery.of(context).size.height * 0.28,
+           child: FutureBuilder(
+             future: CallAPI().getNews(),
+             builder: (BuildContext context, AsyncSnapshot<List<NewsModel>> snapshot){
+                 if(snapshot.hasError){
+                   return Center(
+                     child: Text('มีข้อผิดพลาด ${snapshot.error.toString()}'),
+                   );
+                 }else if(snapshot.connectionState == ConnectionState.done){
+                  List<NewsModel> news = snapshot.data;
+                  return _listViewAllNews(news);
+                 }else{
+                   return Center(
+                     child: CircularProgressIndicator(),
+                  );
+                }
+             }
+        ),
          ),
-         ListTile(
-           leading: Icon(Icons.new_releases),
-           title: Text('นำทาง รพ.ผจก กำหนดส่วนงานฝ่ายทรัพยากร'),
-           subtitle: Text('Map นำทาง รพ.ผจก กำหนด'),
-           onTap: () {},
-         ),
-         ListTile(
-           leading: Icon(Icons.new_releases),
-           title: Text('ทดสอบหัวข้อข่าวที่ 3'),
-           subtitle: Text('รายละเอียดในหัวข้อข่าวที่ 3'),
-           onTap: () {},
-         ),
-         ListTile(
-           leading: Icon(Icons.new_releases),
-           title: Text('ทดสอบหัวข้อข่าวที่ 4'),
-           subtitle: Text('รายละเอียดในหัวข้อข่าวที่ 4'),
-           onTap: () {},
-         ),
-         ListTile(
-           leading: Icon(Icons.new_releases),
-           title: Text('ทดสอบหัวข้อข่าวที่ 5'),
-           subtitle: Text('รายละเอียดในหัวข้อข่าวที่ 5'),
-           onTap: () {},
-         )
-         
+
         ]
        ),
     );
   }
+
+  // ListView builder
+  Widget _builderListView(List<NewsModel> news){
+    return ListView.builder(
+           scrollDirection: Axis.horizontal,
+           itemCount: news.length, 
+           itemBuilder: (context, index) {
+           // Load Model
+           NewsModel newsModel = news[index];
+              return Container(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: InkWell(
+                  onTap: () => url_launcher.launch('https://pub.dev/packages/url_launcher'),
+                  child: Card(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // Image.network(newsModel.imageurl, height: 50,),
+                        image: DecorationImage(
+                          image: NetworkImage(newsModel.imageurl, ),
+                          fit: BoxFit.fitWidth,
+                          alignment: Alignment.topCenter
+                        )
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              newsModel.topic, 
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 16.0, 
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
+                            Text(
+                              newsModel.detail,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 16.0, 
+                              )
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+          );
+  }
+
+
+  // ListView All news
+  Widget _listViewAllNews(List<NewsModel> news){  
+    return ListView.builder(
+           scrollDirection: Axis.vertical,
+           itemCount: news.length, 
+           itemBuilder: (context, index) {
+             NewsModel newsModel = news[index];
+             return ListTile(
+              leading: Icon(Icons.new_releases),
+              title: Text(newsModel.topic, overflow: TextOverflow.ellipsis),
+              subtitle: Text(newsModel.detail, overflow: TextOverflow.ellipsis),
+              onTap: () {
+                Utility.getInstance().showAlertDialog(
+                  context, newsModel.topic, newsModel.detail
+                );
+              },
+            );
+          });
+  }
+
+
 }

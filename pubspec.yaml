@@ -35,6 +35,8 @@ dependencies:
   get_mac: ^0.0.1
   connectivity: ^0.4.9+2
   local_auth: ^0.6.3+1
+  url_launcher: ^5.7.0
+  geolocator: ^6.0.0+4
 
 dev_dependencies:
   flutter_test:
