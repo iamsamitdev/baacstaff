@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:baacstaff/routers.dart';
 import 'package:baacstaff/themes/styles.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,8 @@ Future<void> main() async{
     initURL = '/welcome';
   }
 
+  HttpOverrides.global = new MyHttpOverrides();
+
   runApp(MyApp());
 }
 
@@ -37,5 +41,15 @@ class MyApp extends StatelessWidget {
       initialRoute: initURL,
       routes: routes,
     );
+  }
+}
+
+// เขียน class ข้ามการตรวจ Certificate https
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+    ..badCertificateCallback = 
+    (X509Certificate cert, String host, int port)=>true;
   }
 }

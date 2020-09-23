@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:baacstaff/models/NewsModel.dart';
 import 'package:baacstaff/services/rest_api.dart';
 import 'package:baacstaff/utils/utility.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -48,21 +51,38 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(Icons.work),
               title: Text('ลงเวลาเข้าทำงาน'),
               onTap: () { 
+                // บันทึกข้อมูลลงเวลาเข้า api
+                Map<String,dynamic> body = {
+                  "IMEI":"baac1234",
+                  "latitude": "12",
+                  "longitude": "13",
+                  "Type":"1"
+                };
+                checkInCheckOut(body);
+
                 Utility.getInstance().showAlertDialog(
                   context, 
-                  'เรียบร้อย', 
-                  'บันทึกข้อมูลเวลาเข้าทำงานเรียบร้อยแล้ว\nที่พิกัด $_lat,$_lon'
+                  'ลงเวลาเข้าทำงานเรียบร้อย', 
+                  'บันทึกข้อมูลเรียบร้อยแล้ว\nที่พิกัด $_lat,$_lon'
                 );
               },
             ),
             ListTile(
               leading: Icon(Icons.time_to_leave),
               title: Text('ลงเวลาออกงาน'),
-              onTap: () { 
+              onTap: () {
+                // บันทึกข้อมูลลงเวลาเข้า api
+                Map<String,dynamic> body = {
+                  "IMEI":"baac1234",
+                  "latitude": "12",
+                  "longitude": "13",
+                  "Type":"2"
+                };
+                checkInCheckOut(body); 
                 Utility.getInstance().showAlertDialog(
                   context, 
-                  'เรียบร้อย', 
-                  'บันทึกข้อมูลเวลาออกงานเรียบร้อยแล้ว\nที่พิกัด $_lat,$_lon'
+                  'ลงเวลาออกงานเรียบร้อย', 
+                  'บันทึกข้อมูลเรียบร้อยแล้ว\nที่พิกัด $_lat,$_lon'
                 );
               },
             ),
@@ -288,5 +308,24 @@ class _HomeScreenState extends State<HomeScreen> {
           });
   }
 
+
+  checkInCheckOut(empData) async {
+    var result = await Connectivity().checkConnectivity();
+    if(result==ConnectivityResult.none){ // ไม่ได้ออนไลน์
+      Utility.getInstance().showAlertDialog(
+        context, 
+        'ออฟไลน์', 
+        'คุณยังไม่ได้เชื่อมต่ออินเตอร์เน็ต'
+      );
+    }else{
+      // Call API
+      var response = await CallAPI().checkInAndOut(
+        empData, 
+        'Golocation'
+      );
+      var body = json.decode(response.body);
+      print(body);
+    }
+  }
 
 }
