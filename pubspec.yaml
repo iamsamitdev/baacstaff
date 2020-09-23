@@ -37,6 +37,13 @@ dependencies:
   local_auth: ^0.6.3+1
   url_launcher: ^5.7.0
   geolocator: ^6.0.0+4
+  google_maps_flutter: ^0.5.32
+  flutter_launcher_icons: ^0.8.0
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
 
 dev_dependencies:
   flutter_test:

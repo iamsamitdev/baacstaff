@@ -139,11 +139,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.pop(context);
                 },
               ),
-               ListTile(
+              ListTile(
                 leading: Icon(Icons.timelapse),
                 title: Text('ลงเวลาทำงาน'),
                 onTap: (){ 
                   Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.pin_drop),
+                title: Text('พื้นที่ให้บริการ'),
+                onTap: (){ 
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/servicemap');
                 },
               ),
               Divider(color: Colors.green[200],),
