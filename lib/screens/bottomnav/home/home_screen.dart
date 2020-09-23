@@ -20,17 +20,71 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // สร้าง Ojbect Geolocator
   Position position;
+  String _lat, _lon;
  
   // ฟังก์ชันเช็คว่าผู้ใช้เปิด GPS แล้วหรือยัง
   checkGPS() async {
-    position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     bool _isLocationServiceEnabled = await isLocationServiceEnabled();
     if(_isLocationServiceEnabled){
-      Utility.getInstance().showAlertDialog(
-        context, 'พิกัดที่ได้', 
-        'Latitude='+position.latitude.toString()+'\n'
-        'Longitude='+position.longitude.toString()
+      position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      _lat = position.latitude.toString();
+      _lon = position.longitude.toString();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => SimpleDialog(
+          // title: Text('เลือกลงเวลาทำงาน'),
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0, bottom: 10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('วันที่ $_currentDate'),
+                  Text('เวลา $_currentTime')
+                ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.work),
+              title: Text('ลงเวลาเข้าทำงาน'),
+              onTap: () { 
+                Utility.getInstance().showAlertDialog(
+                  context, 
+                  'เรียบร้อย', 
+                  'บันทึกข้อมูลเวลาเข้าทำงานเรียบร้อยแล้ว\nที่พิกัด $_lat,$_lon'
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.time_to_leave),
+              title: Text('ลงเวลาออกงาน'),
+              onTap: () { 
+                Utility.getInstance().showAlertDialog(
+                  context, 
+                  'เรียบร้อย', 
+                  'บันทึกข้อมูลเวลาออกงานเรียบร้อยแล้ว\nที่พิกัด $_lat,$_lon'
+                );
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              // mainAxisSize: MainAxisSize.max,
+              children: [
+                OutlineButton(
+                  child: Icon(Icons.close, size: 20,), 
+                  color: Colors.red,
+                  textColor: Colors.black,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        )
+
       );
+
     }else{
       Utility.getInstance().showAlertDialog(context, 'คุณยังไม่ได้เปิด GPS', 'กรุณาเปิดก่อนใช้งาน');
     }
@@ -89,57 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           RaisedButton(
                             onPressed: (){
                               checkGPS();
-                              /*                        
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => SimpleDialog(
-                                  // title: Text('เลือกลงเวลาทำงาน'),
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0, bottom: 10.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text('วันที่ $_currentDate'),
-                                          Text('เวลา $_currentTime')
-                                        ],
-                                      ),
-                                    ),
-                                    ListTile(
-                                      leading: Icon(Icons.work),
-                                      title: Text('ลงเวลาเข้าทำงาน'),
-                                      onTap: () { 
-                                        Utility.getInstance().showAlertDialog(context, 'เรียบร้อย', 'บันทึกข้อมูลเวลาเข้าทำงานเรียบร้อยแล้ว');
-                                        // Navigator.pop(context);
-                                      },
-                                    ),
-                                    ListTile(
-                                      leading: Icon(Icons.time_to_leave),
-                                      title: Text('ลงเวลาออกงาน'),
-                                      onTap: () { 
-                                        Utility.getInstance().showAlertDialog(context, 'เรียบร้อย', 'บันทึกข้อมูลเวลาออกงานเรียบร้อยแล้ว');
-                                        // Navigator.pop(context);
-                                      },
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      // mainAxisSize: MainAxisSize.max,
-                                      children: [
-                                        OutlineButton(
-                                          child: Icon(Icons.close, size: 20,), 
-                                          color: Colors.red,
-                                          textColor: Colors.black,
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-
-                              );
-                              */
                             },
                             child: Text('ลงเวลาทำงาน', style: TextStyle(color: Colors.white),),
                             color: Colors.red,
