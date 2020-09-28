@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "13959735129",
+    "firebase_url": "https://baacastaff-smkproject.firebaseio.com",
+    "project_id": "baacastaff-smkproject",
+    "storage_bucket": "baacastaff-smkproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13959735129:android:d5f956ac874740608c0e48",
+        "android_client_info": {
+          "package_name": "com.itgenius.baacstaff"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "13959735129-ea4mogcc6fq5jh4m1hs5rcehns3grkhh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5o9bZWNsvzT9Hb3QBN7zo9bbH8rdkxSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13959735129-ea4mogcc6fq5jh4m1hs5rcehns3grkhh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

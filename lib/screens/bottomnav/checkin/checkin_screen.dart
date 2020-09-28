@@ -13,6 +13,17 @@ class CheckinScreen extends StatefulWidget {
 
 class _CheckinScreenState extends State<CheckinScreen> {
 
+  // สร้างตัวแปรไว้เก็บข้อมูลจาก api
+  List<dynamic> _timeDetails = [];
+
+  // อ่านข้อมูลจาก api ใส่ตัวแปร _timeDetails
+  Future<void> fetchTimeDetial() async{
+    var response = await CallAPI().getTimeDetail();
+    setState(() {
+      _timeDetails = response;
+    });
+  }
+
   // สร้างฟังก์ชันอ่านข้อมูลที่ลงเวลาไว้
   getTimeDetail() async {
     var result = await Connectivity().checkConnectivity();
@@ -40,29 +51,32 @@ class _CheckinScreenState extends State<CheckinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: FutureBuilder(
-          future: CallAPI().getTimeDetail(),
-          builder: (BuildContext context,
-            AsyncSnapshot<List<TimeDetailModel>> snapshot){
-              if(snapshot.hasError){
-                // โหลดข้อมูลไม่สำเร็จ
-                return Center(
-                  child: Text('มีข้อผิดพลาด ${snapshot.error.toString()}')
-                );
-              }else if(snapshot.connectionState == ConnectionState.done){
-                // โหลดข้อมูลเสร็จ
-                List<TimeDetailModel> timedetails = snapshot.data;
-                return _listViewTimeDetail(timedetails);
-              }else{
-                // ระหว่างการทำงาน
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+      body:_timeDetails != 0 ? RefreshIndicator(
+          onRefresh: fetchTimeDetial,
+          child: Container(
+          child: FutureBuilder(
+            future: CallAPI().getTimeDetail(),
+            builder: (BuildContext context,
+              AsyncSnapshot<List<TimeDetailModel>> snapshot){
+                if(snapshot.hasError){
+                  // โหลดข้อมูลไม่สำเร็จ
+                  return Center(
+                    child: Text('มีข้อผิดพลาด ${snapshot.error.toString()}')
+                  );
+                }else if(snapshot.connectionState == ConnectionState.done){
+                  // โหลดข้อมูลเสร็จ
+                  List<TimeDetailModel> timedetails = snapshot.data;
+                  return _listViewTimeDetail(timedetails);
+                }else{
+                  // ระหว่างการทำงาน
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
               }
-            }
-        )
-      ),
+          )
+        ),
+      ) : Center(child: CircularProgressIndicator(),),
     );
   }
 

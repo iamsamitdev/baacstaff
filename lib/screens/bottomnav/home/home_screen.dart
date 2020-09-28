@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
            child: Text('ข่าวประกาศล่าสุด', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
          ),
          Container(
-           height: MediaQuery.of(context).size.height * 0.28,
+           height: MediaQuery.of(context).size.height * 0.30,
            child: FutureBuilder(
              future: CallAPI().getNews(),
              builder: (BuildContext context, AsyncSnapshot<List<NewsModel>> snapshot){

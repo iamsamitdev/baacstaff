@@ -154,6 +154,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.pushNamed(context, '/servicemap');
                 },
               ),
+              ListTile(
+                leading: Icon(Icons.photo),
+                title: Text('ถ่ายภาพและอัพโหลด'),
+                onTap: (){ 
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/camera_and_upload');
+                },
+              ),
               Divider(color: Colors.green[200],),
               ListTile(
                 leading: Icon(Icons.exit_to_app),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:baacstaff/routers.dart';
 import 'package:baacstaff/themes/styles.dart';
+import 'package:baacstaff/utils/PushNotificationManager.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +10,7 @@ var storeStep;
 var initURL;
 
 Future<void> main() async{
+
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences sharedPreferences = 
   await SharedPreferences.getInstance();
@@ -32,7 +34,22 @@ Future<void> main() async{
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() { 
+    super.initState();
+    // Call Pushnotification
+    PushNotificationManager().initFirebaseMessaging();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
