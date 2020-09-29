@@ -221,7 +221,10 @@ class _RegisterState extends State<Register> {
         await SharedPreferences.getInstance();
 
         // เก็บค่าที่ต้องการลง SharedPrefference
-        sharedPreferences.setString('storeIMEI', _imeiNumber); // เก็บ EMEI 
+        // sharedPreferences.setString('storeIMEI', _imeiNumber); // เก็บ EMEI 
+        sharedPreferences.setString('storeIMEI', 'baac1234'); // เก็บ EMEI
+        sharedPreferences.setString('storePass', 'baac'); // เก็บ Pass
+
         sharedPreferences.setString('storeMac', _macAddress); // เก็บ MacAddress 
         sharedPreferences.setString('storeEmpID', body['data']['empid']); // รหัสพนักงาน
         sharedPreferences.setString('storeCizID', body['data']['cizid']); // บัตรประชาชน

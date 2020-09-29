@@ -50,6 +50,7 @@ class _EmployeeDetailScreenState extends State<EmployeeDetailScreen> {
       };
       try{
         var response = await CallAPI().getEmployee(empData);
+        // print(response);
         // print(response.data.firstname);
         setState(() {
           _dataEmployee = response;

@@ -44,11 +44,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() { 
     super.initState();
     readEmployee();
+    _actionWidget = _homeActionBar();
   }
 
   // สร้างตัวแบบ list เก็บรายการหน้าของ tab bottom
   int _currentIndex = 0;
   String _title = 'หน้าหลัก';
+  Widget _actionWidget;
 
   final List<Widget> _children = [
     HomeScreen(),
@@ -58,6 +60,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
     EmployeeScreen()
   ];
 
+  // สร้าง Widget action สำหรับไว้แยกแสดงผลบน Appbar
+  Widget _homeActionBar(){
+    return InkWell(
+      onTap: (){
+        Navigator.pushNamed(context, '/scan');
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 15.0),
+        child: Row(
+          children: [
+            Icon(Icons.photo_camera),
+            Text(' SCAN')
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _checkInActionBar(){
+    return RaisedButton(
+      onPressed: (){},
+      child: Text(
+        'ลงเวลาทำงาน', 
+        style: TextStyle(color: Colors.white),
+      ),
+      color: Colors.red,
+    );
+  }
+
   // เขียนเงื่อนไขสลับการเปลี่ยน tab
   void onTabTapped(int index){
     setState(() {
@@ -65,18 +96,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       switch (index) {
         case 0:
           _title = 'หน้าหลัก';
+          _actionWidget = _homeActionBar();
           break;
         case 1:
           _title = 'สวัสดิการ';
+          _actionWidget = Container();
           break;
         case 2:
           _title = 'กองทุนกู้ยืมเพื่อ...';
+          _actionWidget = Container();
           break;
         case 3:
           _title = 'ลงเวลาทำงาน';
+          _actionWidget = _checkInActionBar();
           break;
         case 4:
           _title = 'ข้อมูลของฉัน';
+          _actionWidget = Container();
           break;
       }
     });
@@ -88,6 +124,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         // automaticallyImplyLeading: false,
         title: Text('$_title'),
+        actions: [
+          _actionWidget
+        ],
       ),
       // ส่วนของเมนูด้านข้าง
       drawer: SafeArea(
@@ -140,13 +179,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.timelapse),
-                title: Text('ลงเวลาทำงาน'),
-                onTap: (){ 
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
                 leading: Icon(Icons.pin_drop),
                 title: Text('พื้นที่ให้บริการ'),
                 onTap: (){ 
@@ -160,6 +192,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 onTap: (){ 
                   Navigator.pop(context);
                   Navigator.pushNamed(context, '/camera_and_upload');
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.timelapse),
+                title: Text('ดูข้อมูลประวัติการลงเวลา'),
+                onTap: (){ 
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/showtimedetail');
                 },
               ),
               Divider(color: Colors.green[200],),

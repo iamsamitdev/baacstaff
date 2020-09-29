@@ -9,6 +9,7 @@ import 'package:baacstaff/screens/pincode/pincode_screen.dart';
 import 'package:baacstaff/screens/register/register_screen.dart';
 import 'package:baacstaff/screens/servicemap/servicemap_screen.dart';
 import 'package:baacstaff/screens/setpassword/setpassword_screen.dart';
+import 'package:baacstaff/screens/showtimedetail/showtimedetail.dart';
 import 'package:baacstaff/screens/welcome/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -26,4 +27,5 @@ final Map<String, WidgetBuilder> routes =
   "/employee-detail": (BuildContext context) => EmployeeDetailScreen(),
   "/servicemap": (BuildContext context) => ServiceMapScreen(),
   "/camera_and_upload": (BuildContext context) => CameraGalleryScreen(),
+  "/showtimedetail": (BuildContext context) => ShowTimeDetail(),
 };
