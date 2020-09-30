@@ -1,3 +1,4 @@
+import 'package:baacstaff/screens/barcodescan/barcodescan_screen.dart';
 import 'package:baacstaff/screens/cameragallery/camera_gallery_screen.dart';
 import 'package:baacstaff/screens/consent/consent_screen.dart';
 import 'package:baacstaff/screens/dashboard/dashboard.dart';
@@ -28,4 +29,5 @@ final Map<String, WidgetBuilder> routes =
   "/servicemap": (BuildContext context) => ServiceMapScreen(),
   "/camera_and_upload": (BuildContext context) => CameraGalleryScreen(),
   "/showtimedetail": (BuildContext context) => ShowTimeDetail(),
+  "/scan": (BuildContext context) => BarCodeScanScreen(),
 };

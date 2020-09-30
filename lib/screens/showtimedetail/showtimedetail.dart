@@ -3,7 +3,7 @@ import 'package:baacstaff/services/rest_api.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String _getEmei, _getPass;
+String _getIMEI, _getPass;
 
 class ShowTimeDetail extends StatefulWidget {
   ShowTimeDetail({Key key}) : super(key: key);
@@ -13,17 +13,22 @@ class ShowTimeDetail extends StatefulWidget {
 }
 
 class _ShowTimeDetailState extends State<ShowTimeDetail> {
+
   SharedPreferences sharedPreferences;
-  readEmployee() async{
-      _getEmei = sharedPreferences.getString('storeIMEI').toString();
-      _getPass = sharedPreferences.getString('storePass').toString();
-  }
 
   // ข้อมูล body payload สำหรับแนบไปกับ post
   var bodyData = {
-      'imei': _getEmei,
+      'imei': _getIMEI,
       'pass': _getPass
   };
+
+  readEmployee() async{
+      sharedPreferences = await SharedPreferences.getInstance();
+      // อ่านข้อมูลจาก sharedPreferences ลงตัวแปร
+      _getIMEI = sharedPreferences.getString('storeIMEI').toString();
+      _getPass = sharedPreferences.getString('storePass').toString();
+      // print(bodyData['imei']);
+  }
 
   // ตัวแปรสำหรับไว้เก็บข้อมูลเช็ค pull to refresh
   List<dynamic> _timeDetails = [];
@@ -32,6 +37,7 @@ class _ShowTimeDetailState extends State<ShowTimeDetail> {
     setState(() {
       _timeDetails = response;
     });
+
   }
 
   // สร้างฟังก์ชันอ่านข้อมูลที่ลงเวลาไว้
@@ -50,7 +56,9 @@ class _ShowTimeDetailState extends State<ShowTimeDetail> {
   void initState() {
     super.initState();
     readEmployee();
+    // fetchTimeDetail();
     // getTimeDetail();
+    // print(_getIMEI);
   }
 
 
@@ -60,7 +68,7 @@ class _ShowTimeDetailState extends State<ShowTimeDetail> {
       appBar: AppBar(
         title: Text('ข้อมูลการลงเวลาเข้าออกงาน'),
       ),
-      body: RefreshIndicator(
+      body: _getIMEI == null ? Center(child: CircularProgressIndicator(),) : RefreshIndicator(
             onRefresh: fetchTimeDetail,
             child: Container(
             child: FutureBuilder(
